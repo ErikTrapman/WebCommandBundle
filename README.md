@@ -7,7 +7,7 @@ Example:
 
     /**
      * @Route("/", name="admin_index")
-     * @Template("CyclearGameBundle:Default/Admin:index.html.twig")
+     * @Template("")
      */
     public function indexAction(\Symfony\Component\HttpFoundation\Request $request)
     {
