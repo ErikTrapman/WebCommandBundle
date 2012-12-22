@@ -44,12 +44,6 @@ class ArgumentToConsoleCommandTransformer implements DataTransformerInterface
         if (null === $value) {
             return $value;
         }
-        var_dump($value);
-        die;
-        
-        $r = new \ReflectionClass($value);
-        echo __METHOD__;
-        var_dump($value);
-        die;
+        return $value->getName();
     }
 }
