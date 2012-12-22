@@ -1,8 +1,12 @@
 WebCommandBundle
 ================
-Execute a app/console-command from a Controller.
+The aim of this bundle is to ease managing a Symfony-application on a shared-hosting environment. In a shared-hosting environment there's not always the possibility to execute console-commands. 
+This bundle allows to execute a console-command from a Controller and gives feedback in a flahs-message.
+
+The bundle is not intended to make you run long cron-tasks from the Controller but to provide tools to update your database-schema, or install assets.
 
 Example:
+
 ```php
 
     /**
