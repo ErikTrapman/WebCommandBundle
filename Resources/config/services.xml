@@ -1,0 +1,39 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <!--
+    <parameters>
+        <parameter key="erik_trapman_web_command.example.class">ErikTrapman\Bundle\WebCommandBundle\Example</parameter>
+    </parameters>
+    --> 
+    <services>
+        
+        
+        <service id="eriktrapman.webcommand.commandselectortype" 
+                 class="ErikTrapman\Bundle\WebCommandBundle\Form\CommandSelectorType">
+            <argument type="service" id="eriktrapman.webcommand.argumenttransformer"/>
+            <tag name="form.type" alias="eriktrapman_commandselectortype" />
+        </service>
+        
+        <service id="eriktrapman.webcommand.argumenttransformer" 
+                 class="ErikTrapman\Bundle\WebCommandBundle\DataTransformer\ArgumentToConsoleCommandTransformer">
+            <argument type="service" id="kernel"/>
+        </service>
+        
+        
+        <service id="eriktrapman.webcommand.commandrunlistener" class="ErikTrapman\Bundle\WebCommandBundle\EventListener\CommandRunListener">
+            <argument type="service" id="eriktrapman.webcommand.flashoutput"/>
+            <argument type="service" id="session"/>
+            <tag name="kernel.event_listener" event="eriktrapman.command.run" method="onCommandRun"/>
+        </service>
+          
+          
+        <service id="eriktrapman.webcommand.flashoutput" class="ErikTrapman\Bundle\WebCommandBundle\Output\FlashOutput">
+            <argument type="service" id="session"/>
+        </service>
+        
+    </services>
+</container>
