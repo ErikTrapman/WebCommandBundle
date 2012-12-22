@@ -1,6 +1,6 @@
 {
     "name": "eriktrapman/webcommand-bundle",
-    "description": "Enables you to start console commands from a browser when there's no SSH-access",
+    "description": "Enables you to run a Command from a browser when there's no SSH-access",
     "keywords": ["symfony", "console", "command", "controller", "web"],
     "homepage": "https://github.com/ErikTrapman/WebCommandBundle",
     "type": "symfony-bundle",
