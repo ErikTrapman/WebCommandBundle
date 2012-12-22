@@ -16,7 +16,9 @@ Example:
         if ($request->getMethod() == 'POST') {
             $form->bind($request);
             if ($form->isValid()) {
-                $event = new \ErikTrapman\Bundle\WebCommandBundle\Event\CommandRunEvent($form->get('command')->getData(), $form->get('options')->getData());
+                $event = new \ErikTrapman\Bundle\WebCommandBundle\Event\CommandRunEvent(
+                    $form->get('command')->getData(), 
+                    $form->get('options')->getData());
                 $this->get('event_dispatcher')->dispatch('eriktrapman.command.run', $event);
                 return $this->redirect($this->generateUrl('admin_index'));
             }
