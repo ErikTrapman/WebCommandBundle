@@ -2,13 +2,11 @@
 
 namespace ErikTrapman\Bundle\WebCommandBundle\Command;
 
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\Finder\Finder;
 
-class CacheRemoveCommand extends \Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand
+class CacheRemoveCommand extends ContainerAwareCommand
 {
 
     /**
@@ -19,14 +17,14 @@ class CacheRemoveCommand extends \Symfony\Bundle\FrameworkBundle\Command\Contain
         // TODO bypass proc_open check -option
         $this
             ->setName('eriktrapman:cache:remove')
-            ->setDescription("Removes the complete cache-directory and preserves session-data if ")
+            ->setDescription("Removes the complete cache-directory and does a cache:warmup without any additional cache-warmers")
         ;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function execute(\Symfony\Component\Console\Input\InputInterface $input, \Symfony\Component\Console\Output\OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
         if(function_exists('proc_open')){
             $output->write("This command is designed to run in an environment without proc_open. The command will not be executed");
@@ -36,7 +34,7 @@ class CacheRemoveCommand extends \Symfony\Bundle\FrameworkBundle\Command\Contain
         $newCacheDir = $this->getContainer()->getParameter('kernel.cache_dir').uniqid();
         mkdir($newCacheDir);
         $warmer = $this->getContainer()->get('cache_warmer');
-        $warmer->enableOptionalWarmers();
+        //$warmer->enableOptionalWarmers();
         $warmer->warmUp($newCacheDir);
         // TODO can we find a way to keep the session-data?
         $cacheDir = $this->getContainer()->getParameter('kernel.cache_dir');
@@ -49,8 +47,20 @@ class CacheRemoveCommand extends \Symfony\Bundle\FrameworkBundle\Command\Contain
         //$_SESSION = unserialize($currentSession);
         unlink($newCacheDir);
     }
-
-    function rrmdir($dir)
+    
+    /**
+     * Inspired by https://gist.github.com/1942649 but this could be any recursive delete script
+     * 
+     * @see https://gist.github.com/1942649
+     */
+    private function cc($cache_dir)
+    {
+        if (is_dir($cache_dir)) {
+            $this->rrmdir($cache_dir);
+        }
+    }
+    
+    private function rrmdir($dir)
     {
         if (is_dir($dir)) {
             $objects = scandir($dir);
@@ -69,10 +79,4 @@ class CacheRemoveCommand extends \Symfony\Bundle\FrameworkBundle\Command\Contain
         }
     }
 
-    function cc($cache_dir)
-    {
-        if (is_dir($cache_dir)) {
-            $this->rrmdir($cache_dir);
-        }
-    }
 }
