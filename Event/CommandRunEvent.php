@@ -25,6 +25,10 @@ class CommandRunEvent extends Event
         $this->options = $executableOptions;
     }
     
+    /**
+     * 
+     * @return \Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand
+     */
     public function getCommand()
     {
         return $this->command;

@@ -36,18 +36,37 @@ class CommandRunListener implements EventSubscriberInterface
 
     public function onCommandRun(CommandRunEvent $event)
     {
+        // TODO fix cache-dir
+        // TODO fix options: enable named arguments and option-values. 
+        // TODO other option syntax is needed for Process-builder passing options
         $command = $event->getCommand();
         $options = $event->getOptions();
 
-        $commandTester = new CommandTester($command);
-        $args = array_merge(array('command' => $command->getName()), $options);
-        // https://groups.google.com/forum/?fromgroups=#!topic/symfony2/evamavFCXic
-        if ($command instanceof CacheClearCommand) {
-            //$this->session->save();
-            $args['--no-warmup'] = true;
+        if (function_exists('proc_open')) {
+            $f = new \Symfony\Component\Process\ExecutableFinder();
+            $php = $f->find('php');
+            $rootDir = 'myPath/To/app';
+            $processOptions = '';
+            if (!empty($options)) {
+                $processOptions = implode(" ", array_keys($options));
+                $pb = \Symfony\Component\Process\ProcessBuilder::create(array($php, $rootDir.'/console', $command->getName(), $processOptions));
+            } else {
+                $pb = \Symfony\Component\Process\ProcessBuilder::create(array($php, $rootDir.'/console', $command->getName()));
+            }
+            $p = $pb->getProcess();
+            $p->run();
+            $this->output->doWrite(nl2br($p->getErrorOutput(), false));
+            $this->output->doWrite(nl2br($p->getOutput()), false);
+        } else {
+            if ($command instanceof CacheClearCommand) {
+                $this->output->doWrite('The function proc_open does not exist and I have yet to find a workaround to use the native cache:clear command in web-mode.
+                    Please use the cache-remove command that comes with this bundle: eriktrapman:cache:remove');
+                return;
+            }
+            $commandTester = new CommandTester($command);
+            $args = array_merge(array('command' => $command->getName()), $options);
+            $commandTester->execute($args);
+            $this->output->doWrite(nl2br($commandTester->getDisplay()), false);
         }
-        $commandTester->execute($args);
-        // this is actually pointless when we're executing cache:clear...
-        $this->output->doWrite(nl2br($commandTester->getDisplay()), false);
     }
 }
