@@ -27,6 +27,7 @@
         <service id="eriktrapman.webcommand.commandrunlistener" class="ErikTrapman\Bundle\WebCommandBundle\EventListener\CommandRunListener">
             <argument type="service" id="eriktrapman.webcommand.flashoutput"/>
             <argument type="service" id="session"/>
+            <argument type="service" id="kernel"/>
             <tag name="kernel.event_listener" event="eriktrapman.command.run" method="onCommandRun"/>
         </service>
           

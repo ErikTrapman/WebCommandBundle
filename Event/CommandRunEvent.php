@@ -14,17 +14,24 @@ class CommandRunEvent extends Event
     public function __construct(Command $command, $options)
     {
         $this->command = $command;
-        
+
         $executableOptions = array();
-        if(strlen($options) > 0 ){
-            foreach(explode(" ",$options) as $option){
-                if(!$option){continue;}
-                $executableOptions[$option] = true;
+        if (strlen($options) > 0) {
+            foreach (explode(" ", $options) as $option) {
+                if (!$option) {
+                    continue;
+                }
+                if (false !== strpos($option, "=")) {
+                    $optionParts = explode("=",$option);
+                    $executableOptions[$optionParts[0]] = $optionParts[1];
+                } else {
+                    $executableOptions[$option] = true;
+                }
             }
         }
         $this->options = $executableOptions;
     }
-    
+
     /**
      * 
      * @return \Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand
@@ -38,7 +45,4 @@ class CommandRunEvent extends Event
     {
         return $this->options;
     }
-
-
-    
 }
