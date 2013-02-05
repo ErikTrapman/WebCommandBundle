@@ -22,7 +22,7 @@ class CommandRunListener implements EventSubscriberInterface
      * @var Session
      */
     private $session;
-    
+
     private $kernel;
 
     public function __construct($output, $session, \AppKernel $kernel)
@@ -45,26 +45,28 @@ class CommandRunListener implements EventSubscriberInterface
             $f = new \Symfony\Component\Process\ExecutableFinder();
             $php = $f->find('php');
             $rootDir = $this->kernel->getRootDir();
-            $processOptions = '';
             if (!empty($options)) {
-                $processOptions = '';
-                // Hmmm....
-                foreach($options as $name => $option){
-                    if(true === $option){
-                        $processOptions .= ' '.$name.' ';
+                $pb = \Symfony\Component\Process\ProcessBuilder::create(array($php, $rootDir.'/console', $command->getName()));
+                foreach ($options as $name => $option) {
+                    if (true === $option) {
+                        $pb->add($name);
                     } else {
-                        $processOptions .= ' '.$option.' ';//.$option.' ';
+                        $pb->add($option);
                     }
                 }
-                // TODO doesn't work yet...?!
-                $pb = \Symfony\Component\Process\ProcessBuilder::create(array($php, $rootDir.'/console', $command->getName(), $processOptions));
             } else {
                 $pb = \Symfony\Component\Process\ProcessBuilder::create(array($php, $rootDir.'/console', $command->getName()));
             }
             $p = $pb->getProcess();
             $p->run();
-            $this->output->doWrite(nl2br($p->getErrorOutput(), false));
-            $this->output->doWrite(nl2br($p->getOutput()), false);
+            $errorOuput = $p->getErrorOutput();
+            $output = $p->getOutput();
+            if (strlen($errorOuput)) {
+                $this->output->doWrite(nl2br($errorOuput, false));
+            }
+            if (strlen($output)) {
+                $this->output->doWrite(nl2br($output), false);
+            }
         } else {
             if ($command instanceof CacheClearCommand) {
                 $this->output->doWrite('The function proc_open does not exist and I have yet to find a workaround to use the native cache:clear command in web-mode.
