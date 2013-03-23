@@ -34,6 +34,7 @@ class CacheRemoveCommand extends ContainerAwareCommand
         $this->cc($container->getParameter('kernel.cache_dir'));
         // build up the cache again
         file_get_contents($baseUrl);
+        $output->writeln('Cache removed');
     }
     
     
