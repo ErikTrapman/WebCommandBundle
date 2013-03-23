@@ -24,5 +24,9 @@ class ErikTrapmanWebCommandExtension extends Extension
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
+        
+        if(array_key_exists('base_url', $config)){
+            $container->setParameter('erik_trapman_web_command.base_url', $config['base_url']);
+        }
     }
 }
